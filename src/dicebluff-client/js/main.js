@@ -44,11 +44,15 @@
 		}
 		
 		function enablePrompt() {
-			//
+			// Show and enable the prompt
+			promptNode.hidden = false;
+			promptNode.contentEditable = true;
 		}
 		
 		function disablePrompt() {
-			//
+			// Hide and disable the prompt
+			promptNode.hidden = true;
+			promptNode.contentEditable = false;
 		}
 		
 		function flushPrompt() {
