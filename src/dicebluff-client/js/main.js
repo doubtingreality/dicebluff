@@ -8,6 +8,8 @@
 	function attachConsole(consoleNode) {
 		var socketReference = io(),
 			outputCount = 0,
+			outputList = [],
+			outputLookup = {},
 			promptNode = consoleNode.querySelector('.prompt');
 		
 		socketReference.on('connect', function() {
@@ -65,30 +67,47 @@
 		}
 		
 		function appendOutput(output, fromPrompt) {
-			var outputNodes = consoleNode.getElementsByClassName('output'),
-				stageOutputNode = documentReference.createElement('div'),
-				stageOutputIdentifier = outputCount++,
-				pruneLimit = Math.max(0, (outputNodes.length - 50)),
-				pruneIndex;
+			var outputNode = documentReference.createElement('div'),
+				outputIdentifier = outputCount++,
+				outputEntry,
+				historyLimit = Math.max(0, (outputList.length - 50)),
+				historyIndex,
+				historyEntry;
 			
 			/* Remove output elements
 				which exceed the maximum number of permitted elements */
-			for (pruneIndex = 0; (pruneIndex < pruneLimit); pruneIndex++) {
-				consoleNode.removeChild(outputNodes[pruneIndex]);
+			for (historyIndex = 0;
+				 	(historyIndex < historyLimit);
+				 	historyIndex++) {
+				historyEntry = outputList[historyIndex];
+				
+				((outputLookup.hasOwnProperty(historyEntry.id))
+					&& (delete outputLookup[historyEntry.id]));
+				
+				(consoleNode.contains(historyEntry.node)
+					&& consoleNode.removeChild(historyEntry.node));
 			}
+
+			// Track the output node
+			outputEntry = {
+				id: outputIdentifier,
+				node: outputNode
+			};
 			
-			stageOutputNode.classList.add('output');
-			stageOutputNode.dataset.outputIdentifier = stageOutputIdentifier;
-			(fromPrompt && stageOutputNode.classList.add('from-prompt'));
-			stageOutputNode.textContent = output;
+			outputNode.classList.add('output');
+			(fromPrompt && outputNode.classList.add('from-prompt'));
+			outputNode.textContent = (output || '');
+			
+			outputList.push(outputEntry);
+			outputLookup[outputIdentifier] = outputEntry;
 			
 			/* Insert the element before the prompt
 				(and thereby below all other output)
 				and scroll the console to the bottom */
-			consoleNode.insertBefore(stageOutputNode, promptNode);
+			consoleNode.insertBefore(outputNode, promptNode);
 			consoleNode.scrollTop = consoleNode.scrollHeight;
 			
-			return stageOutputIdentifier;
+			return outputIdentifier;
 		}
 		
 		function replaceOutput(lineOffset, output, fromPrompt) {
