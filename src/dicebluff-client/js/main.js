@@ -1,6 +1,60 @@
 ;(function(windowReference, documentReference) {
 	'use strict';
 	
+	var spinnerFrames = [
+		'(•   ) ',
+		'( •  ) ',
+		'(  • ) ',
+		'(   •) ',
+		'(  • ) ',
+		'( •  ) '
+	];
+	
+	var diceFrames = [
+		[
+			'╔═════════╗',
+			'║         ║',
+			'║    •    ║',
+			'║         ║',
+			'╚═════════╝'
+		],
+		[
+			'╔═════════╗',
+			'║       • ║',
+			'║         ║',
+			'║ •       ║',
+			'╚═════════╝'
+		],
+		[
+			'╔═════════╗',
+			'║       • ║',
+			'║    •    ║',
+			'║ •       ║',
+			'╚═════════╝'
+		],
+		[
+			'╔═════════╗',
+			'║ •     • ║',
+			'║         ║',
+			'║ •     • ║',
+			'╚═════════╝'
+		],
+		[
+			'╔═════════╗',
+			'║ •     • ║',
+			'║    •    ║',
+			'║ •     • ║',
+			'╚═════════╝'
+		],
+		[
+			'╔═════════╗',
+			'║ •  •  • ║',
+			'║         ║',
+			'║ •  •  • ║',
+			'╚═════════╝'
+		]
+	];
+	
 	var consoleNode = documentReference.querySelector('.console');
 	
 	(consoleNode && attachConsole(consoleNode));
@@ -176,5 +230,53 @@
 				);
 			}
 		}
+		
+		function createSpinner(outputIdentifier) {
+			var spinnerFrameCount = spinnerFrames.length,
+				spinnerFrameIndex = 0,
+				spinnerInterval;
+			
+			function firstFrame() {
+				replaceOutput(outputIdentifier,
+					spinnerFrames[spinnerFrameIndex++], false, 0, -1); // Insert
+				((spinnerFrameIndex >= spinnerFrameCount)
+					&& (spinnerFrameIndex = 0));
+			}
+			
+			function nextFrame() {
+				if (typeof outputLookup[outputIdentifier] !== 'undefined') {
+					replaceOutput(outputIdentifier,
+					spinnerFrames[spinnerFrameIndex++], false, 0); // Override
+					((spinnerFrameIndex >= spinnerFrameCount)
+						&& (spinnerFrameIndex = 0));
+					
+				} else {
+					// Remove the spinner if the output does not exist
+					destroySpinner(outputIdentifier, spinnerInterval);
+				}
+			}
+
+			// Setup animation
+			firstFrame();
+			spinnerInterval = windowReference.setInterval(nextFrame, 150);
+			return spinnerInterval;
+		}
+		
+		function destroySpinner(outputIdentifier, spinnerInterval) {
+			windowReference.clearInterval(spinnerInterval);
+			replaceOutput(outputIdentifier, null, false, 0,
+				(spinnerFrames[0].length - 1));
+		}
+		
+		//
+		
+		appendOutput('Waiting for socket...', false);
+		createSpinner(0);
+		
+		
+		
+		//
+		
+		
 	}
 })(window, document);
