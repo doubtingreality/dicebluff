@@ -39,6 +39,11 @@ body {
 .output,
 .prompt {
 	word-break: break-all;
+	white-space: pre;
+}
+
+.output:empty::after {
+	content: ' ';
 }
 
 .output.from-prompt::before {
