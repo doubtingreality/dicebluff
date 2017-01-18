@@ -110,8 +110,71 @@
 			return outputIdentifier;
 		}
 		
-		function replaceOutput(lineOffset, output, fromPrompt) {
-			//
+		function appendOutputMultiple(output, fromPrompt) {
+			var outputLength = output.length, outputIndex;
+			
+			for (outputIndex = 0; (outputIndex < outputLength); outputIndex++) {
+				appendOutput(output[outputIndex], fromPrompt);
+			}
+		}
+		
+		function replaceOutput(outputIdentifier,
+				output, fromPrompt, fromPosition, toPosition) {
+			
+			var outputEntry,
+				outputNode,
+				outputText,
+				beforeOutputText,
+				afterOutputText;
+			
+			if (outputLookup.hasOwnProperty(outputIdentifier)) {
+				outputEntry = outputLookup[outputIdentifier];
+				outputNode = outputEntry.node;
+				
+				if (fromPrompt !== outputNode.classList.contains('from-prompt')) {
+					outputNode.classList.toggle('from-prompt');
+				}
+				
+				output = (output || '');
+				
+				if (typeof fromPosition !== 'undefined') {
+					((typeof toPosition === 'undefined')
+						&& (toPosition = (fromPosition + (output.length - 1))));
+					
+					outputText = outputNode.textContent;
+					beforeOutputText = outputText.slice(0,
+						Math.max((fromPosition - 1), 0));
+					afterOutputText = outputText.slice(
+						Math.max((toPosition + 1), 0));
+					
+					outputNode.textContent = (beforeOutputText
+						+ output
+						+ afterOutputText);
+					
+				} else {
+					outputNode.textContent = output;
+				}
+			}
+		}
+		
+		function replaceOutputMultiple(outputIdentifierOffset,
+				output, fromPrompt, fromPosition, toPosition) {
+			
+			var outputLength = output.length,
+				outputIndex;
+			
+			for (outputIndex = 0;
+				 	(outputIndex < outputLength);
+				 	outputIndex++) {
+				// Replace each (partial) line
+				replaceOutput(
+					(outputIdentifierOffset + outputIndex),
+					output[outputIndex],
+					fromPrompt,
+					fromPosition,
+					toPosition
+				);
+			}
 		}
 	}
 })(window, document);
