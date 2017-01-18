@@ -18,30 +18,28 @@
 			//
 		});
 		
-		if (promptNode) {
-			consoleNode.addEventListener('click', function(event) {
-				if (promptNode !== documentReference.activeElement) {
-					event.preventDefault();
-					promptNode.focus();
-				}
-			});
-			
-			consoleNode.addEventListener('touchstart', function(event) {
-				if (promptNode !== documentReference.activeElement) {
-					event.preventDefault();
-					promptNode.focus();
-				}
-			});
-			
-			promptNode.addEventListener('keypress', function(event) {
-				// Enter
-				if (13 === event.which) {
-					// Prevent line break
-					event.preventDefault();
-					flushPrompt();
-				}
-			});
-		}
+		consoleNode.addEventListener('click', function(event) {
+			if (promptNode !== documentReference.activeElement) {
+				event.preventDefault();
+				promptNode.focus();
+			}
+		});
+
+		consoleNode.addEventListener('touchstart', function(event) {
+			if (promptNode !== documentReference.activeElement) {
+				event.preventDefault();
+				promptNode.focus();
+			}
+		});
+
+		promptNode.addEventListener('keypress', function(event) {
+			// Enter
+			if (13 === event.which) {
+				// Prevent line break
+				event.preventDefault();
+				flushPrompt();
+			}
+		});
 		
 		function enablePrompt() {
 			// Show and enable the prompt
