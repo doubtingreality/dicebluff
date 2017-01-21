@@ -200,7 +200,7 @@
         var selfReference = this;
 
         function rollIteration(rollCount, previousEyesCount) {
-            var oppositeEyesCount, eyesCount, rollDuration;
+            var oppositeEyesCount, eyesList, eyesCount, rollDuration;
 
             /* Eyes are currently fixed at one to six
                 (which must correspond to the frame indices) */
@@ -208,17 +208,19 @@
                 eyesCount = (Math.round((Math.random() * 5)) + 1);
 
             } else {
+                oppositeEyesCount = ((6 - previousEyesCount) + 1);
+                eyesList = [];
+
                 /* Make sure the dice rolls to a different side
                     that is not the opposite side */
-                eyesCount = (Math.round((Math.random() * 4)) + 1);
-                oppositeEyesCount = ((6 - previousEyesCount) + 1);
-
-                // Correct the eyes count
-                while ((eyesCount === previousEyesCount)
-                        || (eyesCount === oppositeEyesCount)) {
-                    eyesCount++;
-                    ((eyesCount > 6) && (eyesCount = 1));
+                for (eyesCount = 1; (eyesCount <= 6); eyesCount++) {
+                    if ((eyesCount !== previousEyesCount)
+                            && (eyesCount !== oppositeEyesCount)) {
+                        eyesList.push(eyesCount);
+                    }
                 }
+
+                eyesCount = eyesList[(Math.round((Math.random() * 3)))];
             }
 
             selfReference.drawFrame(eyesCount);
@@ -596,7 +598,7 @@
     };
 
     Examples.prototype.rollDice = function() {
-        var diceGroup = this.console.createDiceGroup(diceFrames, 5);
+        var diceGroup = this.console.createDiceGroup(diceFrames, 12);
 
         diceGroup.roll(14, 100, function(eyes) {
             console.log('Rolled eyes: ' + eyes); }
