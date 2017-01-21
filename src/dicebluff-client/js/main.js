@@ -193,36 +193,57 @@
     };
 
     Dice.prototype.roll = function(
-        rollCount,
         maximumRollCount,
         minimumRollDuration,
         eyesCallback
     ) {
-        var eyesCount, rollDuration;
+        var selfReference = this;
 
-        /* Eyes are currently fixed at one to six
-            (which must correspond to the frame indices) */
-        eyesCount = (Math.round((Math.random() * 5)) + 1);
-        this.drawFrame(eyesCount);
+        function rollIteration(rollCount, previousEyesCount) {
+            var oppositeEyesCount, eyesCount, rollDuration;
 
-        if (--rollCount > 0) {
-            /* Calculate the roll duration and recursively invoke
-                this method after the roll duration (timeout) */
-            rollDuration = (minimumRollDuration
-                + ((maximumRollCount - rollCount)
-                        * (maximumRollCount - rollCount)
-                   * Math.random()));
+            /* Eyes are currently fixed at one to six
+                (which must correspond to the frame indices) */
+            if (null === previousEyesCount) {
+                eyesCount = (Math.round((Math.random() * 5)) + 1);
 
-            windowReference.setTimeout(
-                Dice.prototype.roll.bind(this, rollCount, maximumRollCount,
-                    minimumRollDuration, eyesCallback),
-                rollDuration
-            );
+            } else {
+                /* Make sure the dice rolls to a different side
+                    that is not the opposite side */
+                eyesCount = (Math.round((Math.random() * 4)) + 1);
+                oppositeEyesCount = ((6 - previousEyesCount) + 1);
 
-        } else {
-            // Finally invoke the eyes callback
-            eyesCallback.call(null, eyesCount);
+                // Correct the eyes count
+                while ((eyesCount === previousEyesCount)
+                        || (eyesCount === oppositeEyesCount)) {
+                    eyesCount++;
+                    ((eyesCount > 6) && (eyesCount = 1));
+                }
+            }
+
+            selfReference.drawFrame(eyesCount);
+
+            if (--rollCount > 0) {
+                /* Calculate the roll duration and recursively invoke
+                    this method after the roll duration (timeout) */
+                rollDuration = (minimumRollDuration
+                    + ((maximumRollCount - rollCount)
+                            * (maximumRollCount - rollCount)
+                       * Math.random()));
+
+                windowReference.setTimeout(
+                    rollIteration.bind(null, rollCount, eyesCount),
+                    rollDuration
+                );
+
+            } else {
+                // Finally invoke the eyes callback
+                eyesCallback.call(null, eyesCount);
+            }
         }
+
+        // Roll the dice
+        rollIteration.call(null, maximumRollCount, null);
     };
 
     function DiceGroup(diceList) {
@@ -233,7 +254,6 @@
     }
 
     DiceGroup.prototype.roll = function(
-        rollCount,
         maximumRollCount,
         minimumRollDuration,
         eyesCallback
@@ -251,7 +271,6 @@
             diceReference = this.diceList[diceIndex];
 
             diceReference.roll(
-                rollCount,
                 maximumRollCount,
                 minimumRollDuration,
                 (function(diceIndex, eyesCount) {
@@ -579,7 +598,7 @@
     Examples.prototype.rollDice = function() {
         var diceGroup = this.console.createDiceGroup(diceFrames, 5);
 
-        diceGroup.roll(20, 20, 40, function(eyes) {
+        diceGroup.roll(14, 100, function(eyes) {
             console.log('Rolled eyes: ' + eyes); }
         );
     };
