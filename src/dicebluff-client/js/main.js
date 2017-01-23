@@ -240,7 +240,7 @@
 
             } else {
                 // Finally invoke the eyes callback
-                eyesCallback.call(null, eyesCount);
+                windowReference.setTimeout(eyesCallback.bind(null, eyesCount));
             }
         }
 
@@ -321,20 +321,18 @@
         var selfReference, frameIndex, loaderFrame;
 
         if (this.loaderInterval === null) {
-            selfReference = this;
-
             /* Prepend the initial frame
                 (subsequent frames are replaced over it) */
             frameIndex = 0;
             loaderFrame = this.loaderFrames[frameIndex];
             this.output.prependText(loaderFrame);
 
-            this.loaderInterval = windowReference.setInterval(function() {
+            this.loaderInterval = windowReference.setInterval((function() {
                 // Loop the animation
-                ((++frameIndex >= selfReference.loaderFrames.length) && (frameIndex = 0));
-                loaderFrame = selfReference.loaderFrames[frameIndex];
-                selfReference.output.replaceText(loaderFrame, 0, loaderFrame.length);
-            }, frameDuration);
+                ((++frameIndex >= this.loaderFrames.length) && (frameIndex = 0));
+                loaderFrame = this.loaderFrames[frameIndex];
+                this.output.replaceText(loaderFrame, 0, loaderFrame.length);
+            }).bind(this), frameDuration);
         }
     };
 
@@ -499,7 +497,8 @@
                 disable the prompt and invoke the input callback */
             this.promptCallback = null;
             this.disablePrompt();
-            inputCallback.call(null, promptContent);
+
+            windowReference.setTimeout(inputCallback.bind(null, promptContent));
         };
     };
 
