@@ -405,7 +405,11 @@
             (and thereby below all other output)
             and scroll the console to the bottom */
         this.consoleNode.insertBefore(outputNode, this.promptNode);
-        this.consoleNode.scrollTop = this.consoleNode.scrollHeight;
+
+        // Scroll after the elements have been updated
+        windowReference.setTimeout((function() {
+            this.consoleNode.scrollTop = this.consoleNode.scrollHeight;
+        }).bind(this));
 
         /* Ensure the number of output lines
             remains within the history limit */
