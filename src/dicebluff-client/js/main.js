@@ -506,6 +506,18 @@
         };
     };
 
+    Console.prototype.promptForInputRepeat = function(inputCallback) {
+        var selfReference = this;
+
+        function inputIteration(promptContent) {
+            if (!inputCallback.call(null, promptContent)) {
+                selfReference.promptForInput(inputIteration);
+            }
+        }
+
+        selfReference.promptForInput(inputIteration);
+    };
+
     Console.prototype.createLoader = function(loaderMessage, loaderFrames) {
         var output, loader;
 
