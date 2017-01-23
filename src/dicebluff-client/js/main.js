@@ -482,7 +482,7 @@
 
         if (null !== this.promptCallback) {
             // Invoke the prompt callback if it exists
-            this.promptCallback.call(this, promptContent);
+            windowReference.setTimeout(this.promptCallback.bind(this, promptContent));
         }
 
         return this.createOutput(promptContent, true);
