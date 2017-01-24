@@ -364,19 +364,20 @@
         this.consoleWidth = consoleWidth;
         this.consoleHeight = consoleHeight;
 
-        this.consoleNode.addEventListener('click', function(event) {
-            if (selfReference.promptNode !== documentReference.activeElement) {
-                event.preventDefault();
-                selfReference.promptNode.focus();
-            }
+        documentReference.addEventListener('DOMContentLoaded', function() {
+            // Focus on the prompt when the page has loaded
+            selfReference.focusPrompt();
         });
 
-        this.consoleNode.addEventListener('touchstart', function(event) {
+        function handleConsoleClick(event) {
             if (selfReference.promptNode !== documentReference.activeElement) {
                 event.preventDefault();
-                this.promptNode.focus();
+                selfReference.focusPrompt();
             }
-        });
+        }
+
+        this.consoleNode.addEventListener('click', handleConsoleClick);
+        this.consoleNode.addEventListener('touchstart', handleConsoleClick);
 
         this.promptNode.addEventListener('keypress', function(event) {
             // Enter
@@ -486,6 +487,26 @@
         }
 
         return this.createOutput(promptContent, true);
+    };
+
+    Console.prototype.focusPrompt = function() {
+        var range, selection;
+
+        if (this.promptNode.hasChildNodes()) {
+            /* If the prompt node already contains children,
+                the cursor is placed at the end of the prompt node */
+            range = documentReference.createRange();
+            range.selectNodeContents(this.promptNode);
+            range.collapse(false);
+
+            selection = documentReference.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+        } else {
+            // Focus on the node if it does not have children
+            this.promptNode.focus();
+        }
     };
 
     Console.prototype.promptForInput = function(inputCallback) {
