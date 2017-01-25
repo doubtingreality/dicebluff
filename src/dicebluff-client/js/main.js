@@ -493,6 +493,8 @@
     Console.prototype.focusPrompt = function() {
         var range, selection;
 
+        this.promptNode.focus();
+
         if (this.promptNode.hasChildNodes()) {
             /* If the prompt node already contains children,
                 the cursor is placed at the end of the prompt node */
@@ -503,10 +505,6 @@
             selection = documentReference.getSelection();
             selection.removeAllRanges();
             selection.addRange(range);
-
-        } else {
-            // Focus on the node if it does not have children
-            this.promptNode.focus();
         }
     };
 
