@@ -380,8 +380,7 @@
         this.consoleNode.addEventListener('touchstart', handleConsoleClick);
 
         this.promptNode.addEventListener('keypress', function(event) {
-            // Enter
-            if (13 === event.which) {
+            if (event.keyCode === 13) { // Enter
                 /* Prevent a line break from being inserted
                     and flush the prompt if it is enabled */
                 event.preventDefault();
@@ -483,7 +482,9 @@
 
         if (null !== this.promptCallback) {
             // Invoke the prompt callback if it exists
-            windowReference.setTimeout(this.promptCallback.bind(this, promptContent));
+            windowReference.setTimeout(
+                this.promptCallback.bind(this, promptContent)
+            );
         }
 
         return this.createOutput(promptContent, true);
