@@ -540,6 +540,18 @@
         selfReference.promptForInput(inputIteration);
     };
 
+    Console.prototype.promptForKeypress = function(keyCode, keyCallback) {
+        function handleKeypress(event) {
+            if (event.keyCode === keyCode) {
+                // Remove the event listener and invoke the keyboard event
+                documentReference.removeEventListener('keypress', handleKeypress, false);
+                keyCallback.call(null);
+            }
+        }
+
+        documentReference.addEventListener('keypress', handleKeypress, false);
+    };
+
     Console.prototype.createLoader = function(loaderMessage, loaderFrames) {
         var output, loader;
 
