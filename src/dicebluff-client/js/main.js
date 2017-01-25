@@ -366,7 +366,7 @@
 
         documentReference.addEventListener('DOMContentLoaded', function() {
             // Focus on the prompt when the page has loaded
-            selfReference.focusPrompt();
+            (this.promptEnabled && selfReference.focusPrompt());
         });
 
         function handleConsoleClick(event) {
