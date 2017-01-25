@@ -526,11 +526,13 @@
         };
     };
 
-    Console.prototype.promptForInputRepeat = function(inputCallback) {
+    Console.prototype.promptForInputRepeat = function(repeatCallback, inputCallback) {
         var selfReference = this;
 
         function inputIteration(promptContent) {
-            if (!inputCallback.call(null, promptContent)) {
+            if (repeatCallback.call(null, promptContent)) {
+                inputCallback.call(null, promptContent);
+            } else {
                 selfReference.promptForInput(inputIteration);
             }
         }
