@@ -205,7 +205,7 @@
             /* Eyes are currently fixed at one to six
                 (which must correspond to the frame indices) */
             if (null === previousEyesCount) {
-                eyesCount = (Math.round((Math.random() * 5)) + 1);
+                eyesCount = (Math.floor((Math.random() * 6)) + 1);
 
             } else {
                 oppositeEyesCount = ((6 - previousEyesCount) + 1);
@@ -220,7 +220,7 @@
                     }
                 }
 
-                eyesCount = eyesList[(Math.round((Math.random() * 3)))];
+                eyesCount = eyesList[(Math.floor((Math.random() * 4)))];
             }
 
             selfReference.drawFrame(eyesCount);
@@ -228,10 +228,10 @@
             if (--rollCount > 0) {
                 /* Calculate the roll duration and recursively invoke
                     this method after the roll duration (timeout) */
-                rollDuration = (minimumRollDuration
+                rollDuration = Math.floor((minimumRollDuration
                     + ((maximumRollCount - rollCount)
                             * (maximumRollCount - rollCount)
-                       * Math.random()));
+                       * Math.random())));
 
                 windowReference.setTimeout(
                     rollIteration.bind(null, rollCount, eyesCount),
