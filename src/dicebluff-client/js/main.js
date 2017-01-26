@@ -635,45 +635,351 @@
         return diceGroup;
     };
 
-    function Examples(console) {
+    function LocalPlayer(console, name, diceCount) {
         this.console = console;
+        this.name = name;
+
+        this.diceCount = diceCount;
+        this.previousEyesList = null;
     }
 
-    Examples.prototype.askForName = function() {
-        this.console.createOutput('What is your name?');
+    LocalPlayer.prototype.getDiceCount = function() {
+        // Return the number of dice in hand
+        return this.diceCount;
+    };
 
-        this.console.promptForInput(function(input) {
-            console.log('Your name is: ' + input);
+    LocalPlayer.prototype.discardDice = function() {
+        if (this.diceCount > 0) {
+            this.previousEyesList = null;
+            this.diceCount--;
+        }
+    };
+
+    LocalPlayer.prototype.rollDice = function(eyesCallback) {
+        var selfReference = this,
+            diceGroup = this.console.createDiceGroup(diceFrames, this.diceCount);
+
+        this.console.createEmptyOutput(false);
+        this.console.createOutput('Press <space> to roll the dice.', false);
+
+        this.console.promptForKeypress(32, function() {
+            // Roll the dice when space is pressed
+            diceGroup.roll(20, 100, function(eyesList) {
+                selfReference.previousEyesList = eyesList.slice();
+                eyesCallback.call(null, eyesList);
+            });
         });
     };
 
-    Examples.prototype.rollDice = function() {
-        var diceGroup = this.console.createDiceGroup(diceFrames, 12);
-
-        diceGroup.roll(14, 100, function(eyes) {
-            console.log('Rolled eyes: ' + eyes); }
-        );
+    LocalPlayer.prototype.estimateEyes = function(
+        estimatedEyesList,
+        opponentList,
+        wildcardEnabled,
+        eyesCallback
+    ) {
+        //
     };
 
-    Examples.prototype.loader = function() {
-        var loader = this.console.createLoader(
-            'Connecting to server...',
-            loaderFrames
+    LocalPlayer.prototype.evaluateEstimate = function(
+        estimatedEyesList,
+        opponentList,
+        wildcardEnabled,
+        verdictCallback
+    ) {
+        //
+    };
+
+    function SimulatedPlayer(name, diceCount) {
+        this.name = name;
+        this.diceCount = diceCount;
+        this.previousEyesList = null;
+    }
+
+    // Based upon http://bit.ly/2jtJsl1, values were calculated with R 3.3.2
+    SimulatedPlayer.probabilityTable = [
+        [ 0.17 ],
+        [ 0.31, 0.03 ],
+        [ 0.42, 0.07 ],
+        [ 0.52, 0.13, 0.02 ],
+        [ 0.60, 0.20, 0.04 ],
+        [ 0.67, 0.26, 0.06, 0.01 ],
+        [ 0.72, 0.33, 0.10, 0.02 ],
+        [ 0.77, 0.40, 0.13, 0.03 ],
+        [ 0.81, 0.46, 0.18, 0.05, 0.01 ],
+        [ 0.84, 0.52, 0.22, 0.07, 0.02 ],
+        [ 0.87, 0.57, 0.27, 0.10, 0.02 ],
+        [ 0.89, 0.62, 0.32, 0.13, 0.04, 0.01 ],
+        [ 0.91, 0.66, 0.37, 0.16, 0.05, 0.01 ],
+        [ 0.92, 0.70, 0.42, 0.19, 0.07, 0.02 ],
+        [ 0.94, 0.74, 0.47, 0.23, 0.09, 0.03, 0.01 ],
+        [ 0.95, 0.77, 0.51, 0.27, 0.11, 0.04, 0.01 ],
+        [ 0.95, 0.80, 0.56, 0.31, 0.14, 0.05, 0.01 ],
+        [ 0.96, 0.83, 0.60, 0.35, 0.17, 0.07, 0.02, 0.01 ],
+        [ 0.97, 0.85, 0.64, 0.39, 0.20, 0.08, 0.03, 0.01 ],
+        [ 0.97, 0.87, 0.67, 0.43, 0.23, 0.10, 0.04, 0.01 ],
+        [ 0.98, 0.89, 0.70, 0.47, 0.26, 0.12, 0.05, 0.02 ],
+        [ 0.98, 0.90, 0.73, 0.51, 0.30, 0.15, 0.06, 0.02, 0.01 ],
+        [ 0.98, 0.92, 0.76, 0.55, 0.33, 0.17, 0.07, 0.03, 0.01 ],
+        [ 0.99, 0.93, 0.79, 0.58, 0.37, 0.20, 0.09, 0.04, 0.01 ],
+        [ 0.99, 0.94, 0.81, 0.62, 0.41, 0.23, 0.11, 0.04, 0.02 ]
+    ];
+
+    SimulatedPlayer.wildcardProbabilityTable = [
+        [ 0.33 ],
+        [ 0.56, 0.11 ],
+        [ 0.70, 0.26, 0.04 ],
+        [ 0.80, 0.41, 0.11, 0.01 ],
+        [ 0.87, 0.54, 0.21, 0.05 ],
+        [ 0.91, 0.65, 0.32, 0.10, 0.02 ],
+        [ 0.94, 0.74, 0.43, 0.17, 0.05, 0.01 ],
+        [ 0.96, 0.80, 0.53, 0.26, 0.09, 0.02 ],
+        [ 0.97, 0.86, 0.62, 0.35, 0.14, 0.04, 0.01 ],
+        [ 0.98, 0.90, 0.70, 0.44, 0.21, 0.08, 0.02 ],
+        [ 0.99, 0.92, 0.77, 0.53, 0.29, 0.12, 0.04, 0.01 ],
+        [ 0.99, 0.95, 0.82, 0.61, 0.37, 0.18, 0.07, 0.02 ],
+        [ 0.99, 0.96, 0.86, 0.68, 0.45, 0.24, 0.10, 0.03, 0.01 ],
+        [ 1.00, 0.97, 0.89, 0.74, 0.52, 0.31, 0.15, 0.06, 0.02 ],
+        [ 1.00, 0.98, 0.92, 0.79, 0.60, 0.38, 0.20, 0.09, 0.03, 0.01 ],
+        [ 1.00, 0.99, 0.94, 0.83, 0.66, 0.45, 0.26, 0.13, 0.05, 0.02 ],
+        [ 1.00, 0.99, 0.96, 0.87, 0.72, 0.52, 0.33, 0.17, 0.08, 0.03, 0.01 ],
+        [ 1.00, 0.99, 0.97, 0.90, 0.77, 0.59, 0.39, 0.22, 0.11, 0.04, 0.01 ],
+        [ 1.00, 1.00, 0.98, 0.92, 0.81, 0.65, 0.46, 0.28, 0.15, 0.06, 0.02, 0.01 ],
+        [ 1.00, 1.00, 0.98, 0.94, 0.85, 0.70, 0.52, 0.34, 0.19, 0.09, 0.04, 0.01 ],
+        [ 1.00, 1.00, 0.99, 0.95, 0.88, 0.75, 0.58, 0.40, 0.24, 0.12, 0.06, 0.02, 0.01 ],
+        [ 1.00, 1.00, 0.99, 0.96, 0.90, 0.79, 0.64, 0.46, 0.29, 0.16, 0.08, 0.03, 0.01 ],
+        [ 1.00, 1.00, 0.99, 0.97, 0.92, 0.83, 0.69, 0.52, 0.35, 0.21, 0.11, 0.05, 0.02, 0.01 ],
+        [ 1.00, 1.00, 1.00, 0.98, 0.94, 0.86, 0.74, 0.58, 0.41, 0.25, 0.14, 0.07, 0.03, 0.01 ],
+        [ 1.00, 1.00, 1.00, 0.99, 0.95, 0.89, 0.78, 0.63, 0.46, 0.30, 0.18, 0.09, 0.04, 0.02, 0.01 ]
+    ];
+
+    SimulatedPlayer.lookupProbability = function(
+        opponentDiceCount,
+        estimatedEyesCount,
+        wildcardEnabled
+    ) {
+        var probability,
+            probabilityTable,
+            probabilityTableIndex,
+            probabilityList,
+            probabilityListIndex;
+
+        if (estimatedEyesCount > 0) {
+            probabilityTable = (
+                wildcardEnabled
+                    ? SimulatedPlayer.wildcardProbabilityTable
+                    : SimulatedPlayer.probabilityTable
+            );
+
+            // Default to zero if a probability cannot be found
+            probability = 0;
+            probabilityTableIndex = (opponentDiceCount - 1);
+
+            if ((probabilityTableIndex >= 0)
+                    && (probabilityTableIndex < probabilityTable.length)) {
+                probabilityList = probabilityTable[probabilityTableIndex];
+                probabilityListIndex = (estimatedEyesCount - 1);
+
+                ((probabilityListIndex < probabilityList.length)
+                    && (probability = probabilityList[probabilityListIndex]));
+            }
+
+        } else {
+            // Empty conditions are considered true
+            probability = 1;
+        }
+
+        return probability;
+    };
+
+    // Need some method to reduce the estimate by taking the previous eyes into account!
+    // Probably best to do that with the earlier method!
+
+    SimulatedPlayer.prototype.getDiceCount = function() {
+        // Return the number of dice in hand
+        return this.diceCount;
+    };
+
+    SimulatedPlayer.prototype.discardDice = function() {
+        if (this.diceCount > 0) {
+            this.previousEyesList = null;
+            this.diceCount--;
+        }
+    };
+
+    SimulatedPlayer.prototype.rollDice = function(eyesCallback) {
+        var selfReference = this,
+            eyesList = [],
+            eyes,
+            diceIndex;
+
+        for (diceIndex = 0; (diceIndex < this.diceCount); diceIndex++) {
+            // Randomly generate a number of eyes
+            eyes = (Math.floor((Math.random() * 6)) + 1);
+            eyesList.push(eyes);
+        }
+
+        // Invoke the eyes callback in the next cycle
+        windowReference.setTimeout(function() {
+            selfReference.previousEyesList = eyesList.slice();
+            eyesCallback.call(null, eyesList);
+        });
+    };
+
+    SimulatedPlayer.prototype.estimateEyes = function(
+        estimatedEyesList,
+        opponentList,
+        wildcardEnabled,
+        eyesCallback
+    ) {
+        var estimatedEyesCount = estimatedEyesList.length,
+            estimatedEyesGroups,
+            estimatedEyesIndex,
+            estimatedEyes;
+
+        if (estimatedEyesCount) {
+            // Count the number of dice for each number of eyes
+            estimatedEyesGroups = [ 0, 0, 0, 0, 0, 0 ];
+
+            for (estimatedEyesIndex = 0;
+                    (estimatedEyesIndex < estimatedEyesCount);
+                    estimatedEyesIndex++) {
+                estimatedEyes = estimatedEyesList[estimatedEyesIndex];
+                estimatedEyesGroups[(estimatedEyes - 1)]++;
+            }
+        }
+
+        // First up eyes counts, where possible, because those are "free"
+        //
+    };
+
+    SimulatedPlayer.prototype.evaluateEstimate = function(
+        estimatedEyesList,
+        opponentList,
+        wildcardEnabled,
+        verdictCallback
+    ) {
+        var opponentDiceCount,
+            opponentCount,
+            opponentIndex,
+            matchedEyesCount,
+            previousEyesList,
+            previousEyesCount,
+            previousEyesIndex,
+            previousEyes,
+            estimatedEyesCount,
+            estimatedEyesIndex,
+            estimatedEyes,
+            estimateProbability;
+
+        if (this.diceCount < 1) {
+            throw new Error('Player must have at least one dice');
+        }
+
+        opponentCount = opponentList.length;
+        opponentDiceCount = 0;
+
+        // Calculate the total number of dice in the opponents' hands
+        for (opponentIndex = 0; (opponentIndex < opponentCount); opponentIndex++) {
+            opponentDiceCount += opponentList[opponentIndex].getDiceCount();
+        }
+
+        if (opponentDiceCount < 1) {
+            throw new Error('Opponents must have at least one dice');
+        }
+
+        estimatedEyesCount = estimatedEyesList.length;
+
+        if (this.previousEyesList !== null) {
+            matchedEyesCount = 0;
+
+            /* The built-in comparison method is used
+                (instead of a numeric comparison method)
+                because the eyes list contains only single digits
+                and, for single digits, the character point-based sort
+                will result in the same sorted list */
+            previousEyesList = this.previousEyesList.slice().sort();
+            previousEyesCount = previousEyesList.length;
+            previousEyesIndex = (previousEyesCount - 1);
+
+            estimatedEyesList = estimatedEyesList.slice().sort();
+            estimatedEyesIndex = (estimatedEyesCount - 1);
+
+            /* The lists are compared in reverse so that the ones (the wildcards)
+                amongst the previous eyes are encountered last,
+                at which point they can be substituted for any of the estimated eyes
+                (based upon http://stackoverflow.com/a/1885660) */
+            while ((previousEyesIndex > 0) && (estimatedEyesIndex > 0)) {
+                previousEyes = previousEyesList[previousEyesIndex];
+                estimatedEyes = estimatedEyesList[estimatedEyesIndex];
+
+                if ((previousEyes === estimatedEyes)
+                        || (wildcardEnabled && (previousEyes === 1))) {
+                    previousEyesIndex--;
+                    estimatedEyesIndex--;
+                    matchedEyesCount++;
+
+                } else if (previousEyes > estimatedEyes) {
+                    previousEyesIndex--;
+                } else {
+                    estimatedEyesIndex--;
+                }
+            }
+
+            /* Subtract the number of matched eyes
+                from the number of estimated eyes
+                because these eyes are known and should therefore
+                not be factored into the probability estimate */
+            estimatedEyesCount -= matchedEyesCount;
+            ((estimatedEyesCount < 0) && (estimatedEyesCount = 0));
+
+            /* If the the number of unmatched dice
+                (out of the previously rolled dice)
+                exceeds the number of dice whose value is unknown,
+                then the estimate is certainly invalid */
+            if ((previousEyesCount - matchedEyesCount) > estimatedEyesCount) {
+                /* Invoke the callback "with disbelief"
+                    and return to prevent the probability from being estimated */
+                windowReference.setTimeout(verdictCallback.bind(null, false));
+                return;
+            }
+        }
+
+        estimateProbability = SimulatedPlayer.lookupProbability(
+            opponentDiceCount,
+            estimatedEyesCount,
+            wildcardEnabled
         );
 
-        loader.enable(200);
+        windowReference.setTimeout(verdictCallback.bind(null,
+            (Math.random() < estimateProbability)));
     };
+
+    function Game(console, players) {
+        this.console = console;
+        this.players = players;
+
+        // Limits: allow a maximum of five dice per player, and a maximum of six players (max 25 dice in game, outside of own hand)
+    };
+
+    //
 
     var consoleNode = documentReference.querySelector('.console');
 
     if (consoleNode) {
         // Begin examples
-        var consoleEmulator = new Console(consoleNode, 74, 18, 40),
-            examples = new Examples(consoleEmulator);
+        var consoleEmulator = new Console(consoleNode, 72, 18, 72),
+            game = new Game(consoleEmulator, []),
+            localPlayer = new LocalPlayer(consoleEmulator, 'Joran', 5),
+            simulatedPlayer = new SimulatedPlayer('Chan', 5);
 
-        examples.loader();
-        examples.rollDice();
-        examples.askForName();
+        simulatedPlayer.rollDice(function(eyes) {});
+
+        localPlayer.rollDice(function(eyes) {
+            simulatedPlayer.evaluateEstimate(eyes, [ localPlayer ], true, function(verdict) {
+                console.log(verdict);
+            });
+        });
+
     }
 
 
