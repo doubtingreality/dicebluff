@@ -145,7 +145,7 @@
                 // Reference the line and check the total width
                 diceFrameLine = diceFrame[diceFrameLinesIndex];
 
-                if (null === diceFrameLinesLength) {
+                if (diceFrameLinesLength === null) {
                     diceFrameLinesLength = diceFrameLine.length;
                 } else if (diceFrameLine.length !== diceFrameLinesLength) {
                     throw new Error('Each dice frame line must have the same length');
@@ -199,48 +199,48 @@
     ) {
         var selfReference = this;
 
-        function rollIteration(rollCount, previousEyesCount) {
-            var oppositeEyesCount, eyesList, eyesCount, rollDuration;
+        function rollIteration(rollCount, previousEyes) {
+            var oppositeEyes, eyesList, eyes, rollDuration;
 
             /* Eyes are currently fixed at one to six
                 (which must correspond to the frame indices) */
-            if (null === previousEyesCount) {
-                eyesCount = (Math.floor((Math.random() * 6)) + 1);
+            if (previousEyes === null) {
+                eyes = (Math.floor((Math.random() * 6)) + 1);
 
             } else {
-                oppositeEyesCount = ((6 - previousEyesCount) + 1);
+                oppositeEyes = ((6 - previousEyes) + 1);
                 eyesList = [];
 
                 /* Make sure the dice rolls to a different side
                     that is not the opposite side */
-                for (eyesCount = 1; (eyesCount <= 6); eyesCount++) {
-                    if ((eyesCount !== previousEyesCount)
-                            && (eyesCount !== oppositeEyesCount)) {
-                        eyesList.push(eyesCount);
+                for (eyes = 1; (eyes <= 6); eyes++) {
+                    if ((eyes !== previousEyes)
+                            && (eyes !== oppositeEyes)) {
+                        eyesList.push(eyes);
                     }
                 }
 
-                eyesCount = eyesList[(Math.floor((Math.random() * 4)))];
+                eyes = eyesList[(Math.floor((Math.random() * 4)))];
             }
 
-            selfReference.drawFrame(eyesCount);
+            selfReference.drawFrame(eyes);
 
             if (--rollCount > 0) {
                 /* Calculate the roll duration and recursively invoke
                     this method after the roll duration (timeout) */
                 rollDuration = Math.floor((minimumRollDuration
                     + ((maximumRollCount - rollCount)
-                            * (maximumRollCount - rollCount)
-                       * Math.random())));
+                        * (maximumRollCount - rollCount)
+                        * Math.random())));
 
                 windowReference.setTimeout(
-                    rollIteration.bind(null, rollCount, eyesCount),
+                    rollIteration.bind(null, rollCount, eyes),
                     rollDuration
                 );
 
             } else {
                 // Finally invoke the eyes callback
-                windowReference.setTimeout(eyesCallback.bind(null, eyesCount));
+                windowReference.setTimeout(eyesCallback.bind(null, eyes));
             }
         }
 
@@ -260,7 +260,7 @@
         minimumRollDuration,
         eyesCallback
     ) {
-        var eyesCountList = [],
+        var eyesList = [],
             diceCount = this.diceList.length,
             diceFinished = 0,
             diceIndex,
@@ -268,22 +268,22 @@
 
         for (diceIndex = 0; (diceIndex < diceCount); diceIndex++) {
             // Push a placeholder onto the eyes count list
-            eyesCountList.push(null);
+            eyesList.push(null);
 
             diceReference = this.diceList[diceIndex];
 
             diceReference.roll(
                 maximumRollCount,
                 minimumRollDuration,
-                (function(diceIndex, eyesCount) {
+                (function(diceIndex, eyes) {
                     /* Assign the eyes count to the appropriate index
                         (eyes counts are collected in the order of their dices) */
-                    eyesCountList[diceIndex] = eyesCount;
+                    eyesList[diceIndex] = eyes;
 
                     if (++diceFinished >= diceCount) {
                         /* Invoke the group callback
                             when all dice have finished rolling */
-                        eyesCallback.call(null, eyesCountList);
+                        eyesCallback.call(null, eyesList);
                     }
                 }).bind(null, diceIndex)
             );
@@ -370,6 +370,7 @@
         });
 
         function handleConsoleClick(event) {
+            // TODO: Prevent this from working when we are dragging
             if (selfReference.promptNode !== documentReference.activeElement) {
                 event.preventDefault();
                 selfReference.focusPrompt();
@@ -480,7 +481,7 @@
         promptContent = this.promptNode.textContent;
         this.promptNode.textContent = '';
 
-        if (null !== this.promptCallback) {
+        if (this.promptCallback !== null) {
             // Invoke the prompt callback if it exists
             windowReference.setTimeout(
                 this.promptCallback.bind(this, promptContent)
