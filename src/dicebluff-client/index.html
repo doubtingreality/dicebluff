@@ -1,23 +1,36 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="x-ua-compatible" content="ie=edge">
-		<title></title>
-		<meta name="description" content="">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400">
-		<link rel="stylesheet" href="css/normalize.css">
-		<link rel="stylesheet" href="css/main.css">
-	</head>
-	<body>
-		<div class="container">
-			<div class="console">
-				<div class="prompt" contenteditable="false" spellcheck="false" hidden></div>
-			</div>
-		</div>
-		
-		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-		<script src="js/main.js"></script>
-	</body>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400">
+        <link rel="stylesheet" href="styles/normalize.css">
+        <link rel="stylesheet" href="styles/main.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="console">
+                <div class="prompt" contenteditable="false" spellcheck="false" hidden></div>
+            </div>
+        </div>
+
+        <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+        <script src="app/output.js"></script>
+        <script src="app/dice.js"></script>
+        <script src="app/dice-group.js"></script>
+        <script src="app/loader.js"></script>
+        <script src="app/console.js"></script>
+        <script src="app/statistics.js"></script>
+        <script src="app/dice-statistics.js"></script>
+        <script src="app/dice-filter.js"></script>
+        <script src="app/local-player.js"></script>
+        <script src="app/simulated-player.js"></script>
+        <script src="app/remote-player.js"></script>
+        <script src="app/game.js"></script>
+        <script src="app/main.js"></script>
+    </body>
 </html>
