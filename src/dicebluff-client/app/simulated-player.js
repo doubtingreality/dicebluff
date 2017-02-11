@@ -1,16 +1,7 @@
 'use strict';
 
 function SimulatedPlayer() {
-    /* Randomly sample a bias between zero and one
-        from a truncated normal distribution
-        using rejection sampling */
-    var bias;
-
-    do {
-        bias = ((Statistics.randomNormal() * 0.13444414725) + 0.5);
-    } while ((bias < 0) || (bias > 1));
-
-    this.bias = bias;
+    this.bias = (1 - Math.random()); // (0,1]
 }
 
 SimulatedPlayer.prototype.rollDice = function(diceCount, eyesCallback) {
@@ -22,15 +13,7 @@ SimulatedPlayer.prototype.rollDice = function(diceCount, eyesCallback) {
         eyesList.push(Dice.randomEyes());
     }
 
-    /* With a roll count of twenty and a minimum roll duration
-        of a hundred milliseconds, local player dice rolls take
-        between 2000ms and 4470ms. Sample a random roll duration
-        between these boundaries from a truncated normal distribution
-        using rejection sampling */
-    do {
-        rollDuration = Math.round(((Statistics.randomNormal() * 332.0770437103) + 3235));
-    } while ((rollDuration < 2000) || (rollDuration > 4470));
-
+    rollDuration = (Math.floor((Math.random() * 2471)) + 2000); // 2000ms-4470ms
     window.setTimeout(eyesCallback.bind(null, eyesList), rollDuration);
 };
 
@@ -86,13 +69,7 @@ SimulatedPlayer.prototype.evaluateClaim = function(
     );
 
     verdict = this.decide(claimProbability);
-
-    /* Randomly sample a duration between 5000ms and 20000ms
-        from a truncated normal distribution using rejection sampling */
-    do {
-        evaluationDuration = Math.round(((Statistics.randomNormal() * 2016.662208767) + 12500));
-    } while ((evaluationDuration < 5000) || (evaluationDuration > 20000));
-
+    evaluationDuration = (Math.floor((Math.random() * 15001)) + 5000); // 5000ms-20000ms
     window.setTimeout(verdictCallback.bind(null, verdict), evaluationDuration);
 };
 
