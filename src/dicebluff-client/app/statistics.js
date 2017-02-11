@@ -14,17 +14,3 @@ Statistics.randomNormal = function() {
     return (Math.sqrt((-2 * Math.log(randomUniformOne)))
         * Math.cos((2 * Math.PI * randomUniformTwo)));
 };
-
-Statistics.randomNormalTruncated = function(lowerBound, upperBound) {
-    /* Note that values sampled from a normal distribution,
-        once truncated, are no longer normally distributed */
-    var randomNormal = Statistics.randomNormal();
-
-    if (randomNormal < lowerBound) {
-        randomNormal = lowerBound;
-    } else if (randomNormal > upperBound) {
-        randomNormal = upperBound;
-    }
-
-    return randomNormal;
-};

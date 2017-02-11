@@ -2,8 +2,15 @@
 
 function SimulatedPlayer() {
     /* Randomly sample a bias between zero and one
-        from a truncated normal distribution */
-    this.bias = ((Statistics.randomNormalTruncated(-4, 4) * 0.125) + 0.5);
+        from a truncated normal distribution
+        using rejection sampling */
+    var bias;
+
+    do {
+        bias = ((Statistics.randomNormal() * 0.13444414725) + 0.5);
+    } while ((bias < 0) || (bias > 1));
+
+    this.bias = bias;
 }
 
 SimulatedPlayer.prototype.rollDice = function(diceCount, eyesCallback) {
@@ -17,12 +24,12 @@ SimulatedPlayer.prototype.rollDice = function(diceCount, eyesCallback) {
 
     /* With a roll count of twenty and a minimum roll duration
         of a hundred milliseconds, local player dice rolls take
-        between 2000ms and 4470ms. Therefore, a roll duration
-        between these boundaries is randomly sampled
-        from a truncated normal distribution */
-    rollDuration = Math.round(
-        ((Statistics.randomNormalTruncated(-4, 4) * 308.75) + 3235)
-    );
+        between 2000ms and 4470ms. Sample a random roll duration
+        between these boundaries from a truncated normal distribution
+        using rejection sampling */
+    do {
+        rollDuration = Math.round(((Statistics.randomNormal() * 332.0770437103) + 3235));
+    } while ((rollDuration < 2000) || (rollDuration > 4470));
 
     window.setTimeout(eyesCallback.bind(null, eyesList), rollDuration);
 };
@@ -80,11 +87,11 @@ SimulatedPlayer.prototype.evaluateClaim = function(
 
     verdict = this.decide(claimProbability);
 
-    /* Randomly sample an evaluation duration between 5000ms
-        and 20000ms from a truncated normal distribution */
-    evaluationDuration = Math.round(
-        ((Statistics.randomNormalTruncated(-4, 4) * 1875) + 12500)
-    );
+    /* Randomly sample a duration between 5000ms and 20000ms
+        from a truncated normal distribution using rejection sampling */
+    do {
+        evaluationDuration = Math.round(((Statistics.randomNormal() * 2016.662208767) + 12500));
+    } while ((evaluationDuration < 5000) || (evaluationDuration > 20000));
 
     window.setTimeout(verdictCallback.bind(null, verdict), evaluationDuration);
 };
