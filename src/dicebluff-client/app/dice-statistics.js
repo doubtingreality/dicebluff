@@ -141,8 +141,8 @@ DiceStatistics.lookupProbability = function(
 
 DiceStatistics.lookupPartialProbability = function(
     totalDiceCount,
-    claimDiceCount,
     handDiceCount,
+    claimDiceCount,
     matchedDiceCount,
     wildcardPermitted
 ) {

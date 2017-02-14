@@ -1,7 +1,7 @@
 'use strict';
 
 function SimulatedPlayer() {
-    this.bias = (1 - Math.random()); // (0,1]
+    this.bias = (1 - Math.random()); // (0, 1]
 }
 
 SimulatedPlayer.prototype.rollDice = function(diceCount, eyesCallback) {
@@ -13,7 +13,7 @@ SimulatedPlayer.prototype.rollDice = function(diceCount, eyesCallback) {
         eyesList.push(Dice.randomEyes());
     }
 
-    rollDuration = (Math.floor((Math.random() * 2471)) + 2000); // 2000ms-4470ms
+    rollDuration = (Math.floor((Math.random() * 2471)) + 2000); // 2000-4470
     window.setTimeout(eyesCallback.bind(null, eyesList), rollDuration);
 };
 
@@ -41,20 +41,20 @@ SimulatedPlayer.prototype.evaluateClaim = function(
     wildcardPermitted,
     verdictCallback
 ) {
-    var claimEyesCount,
-        handEyesCount,
+    var handEyesCount,
+        claimEyesCount,
         matchedEyesCount,
         claimProbability,
         verdict,
         evaluationDuration;
 
-    claimEyesCount = claimEyesList.length;
     handEyesCount = handEyesList.length;
+    claimEyesCount = claimEyesList.length;
 
     // Determine how many of the claim eyes are not in our hand
     matchedEyesCount = DiceFilter.matchEyes(
-        claimEyesList,
         handEyesList,
+        claimEyesList,
         wildcardPermitted,
         null,
         null
@@ -62,31 +62,31 @@ SimulatedPlayer.prototype.evaluateClaim = function(
 
     claimProbability = DiceStatistics.lookupPartialProbability(
         totalDiceCount,
-        claimEyesCount,
-        handEyesCount,
+        handEyesList.length,
+        claimEyesList.length,
         matchedEyesCount,
         wildcardPermitted
     );
 
     verdict = this.decide(claimProbability);
-    evaluationDuration = (Math.floor((Math.random() * 15001)) + 5000); // 5000ms-20000ms
+    evaluationDuration = (Math.floor((Math.random() * 15001)) + 5000); // 5000-20000
     window.setTimeout(verdictCallback.bind(null, verdict), evaluationDuration);
 };
 
 SimulatedPlayer.prototype.reviseClaim = function(
     totalDiceCount,
-    claimEyesList,
     handEyesList,
+    claimEyesList,
     wildcardPermitted,
     claimCallback
 ) {
     var revisionCount,
-        claimEyesCount,
-        claimEyesIndex,
-        claimEyes,
         handEyesCount,
         handEyesIndex,
         handEyes,
+        claimEyesCount,
+        claimEyesIndex,
+        claimEyes,
         unclaimedDiceCount,
         claimProbability;
 

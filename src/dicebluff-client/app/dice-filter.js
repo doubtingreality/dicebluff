@@ -5,20 +5,20 @@ function DiceFilter() {
 }
 
 DiceFilter.matchEyes = function(
-    targetEyesList,
     filterEyesList,
+    targetEyesList,
     wildcardPermitted,
     matchedEyesList, // Parameter is populated by this method (if not equal to null)
     unmatchedEyesList // Parameter is populated by this method (if not equal to null)
 ) {
     var pushMatchedEyes,
         pushUnmatchedEyes,
-        targetEyesCount,
-        targetEyesIndex,
-        targetEyes,
         filterEyesCount,
         filterEyesIndex,
         filterEyes,
+        targetEyesCount,
+        targetEyesIndex,
+        targetEyes,
         wildcardOffset,
         matchedEyesCount;
 
@@ -31,13 +31,13 @@ DiceFilter.matchEyes = function(
         because the eyes list contains only single digits
         and, for single digits, the character point-based sort
         will result in the same sorted list */
-    targetEyesList = targetEyesList.slice().sort();
-    targetEyesCount = targetEyesList.length;
-    targetEyesIndex = (targetEyesCount - 1);
-
     filterEyesList = filterEyesList.slice().sort();
     filterEyesCount = filterEyesList.length;
     filterEyesIndex = (filterEyesCount - 1);
+
+    targetEyesList = targetEyesList.slice().sort();
+    targetEyesCount = targetEyesList.length;
+    targetEyesIndex = (targetEyesCount - 1);
 
     wildcardOffset = 0;
     matchedEyesCount = 0;
@@ -45,44 +45,42 @@ DiceFilter.matchEyes = function(
     /* The lists are compared in reverse so that the wildcards
         amongst the filter eyes are encountered last
         (based on http://stackoverflow.com/a/1885660) */
-    while ((targetEyesIndex >= 0) && (filterEyesIndex >= wildcardOffset)) {
-        targetEyes = targetEyesList[targetEyesIndex];
+    while ((filterEyesIndex >= wildcardOffset) && (targetEyesIndex >= 0)) {
         filterEyes = filterEyesList[filterEyesIndex];
+        targetEyes = targetEyesList[targetEyesIndex];
 
-        if (targetEyes === filterEyes) {
+        if (filterEyes === targetEyes) {
             /* Count the matched eyes
                 and (optionally) push the matched eyes */
             matchedEyesCount++;
-            (pushMatchedEyes && matchedEyesList.push(targetEyes));
-
-            targetEyesIndex--;
+            (pushMatchedEyes && matchedEyesList.push(filterEyes));
             filterEyesIndex--;
+            targetEyesIndex--;
 
         } else if (wildcardPermitted && (filterEyesList[wildcardOffset] === 1)) {
             /* Count the matched eyes
-                and (optionally) push the matched eyes */
+                and (optionally) push the matched wildcard */
             matchedEyesCount++;
-            (pushMatchedEyes && matchedEyesList.push(targetEyes));
-
+            (pushMatchedEyes && matchedEyesList.push(1));
             targetEyesIndex--;
             wildcardOffset++;
 
-        } else if (targetEyes > filterEyes) {
+        } else if (filterEyes > targetEyes) {
             // (Optionally) push the unmatched eyes
-            (pushUnmatchedEyes && unmatchedEyesList.push(targetEyes));
-            targetEyesIndex--;
+            (pushUnmatchedEyes && unmatchedEyesList.push(filterEyes));
+            filterEyesIndex--;
 
         } else {
-            filterEyesIndex--;
+            targetEyesIndex--;
         }
     }
 
     // (Optionally) push the remainder of unmatched eyes
     if (pushUnmatchedEyes) {
-        while (targetEyesIndex >= 0) {
-            targetEyes = targetEyesList[targetEyesIndex];
-            unmatchedEyesList.push(targetEyes);
-            targetEyesIndex--;
+        while (filterEyesIndex >= wildcardOffset) {
+            filterEyes = filterEyesList[filterEyesIndex];
+            unmatchedEyesList.push(filterEyes);
+            filterEyesIndex--;
         }
     }
 
