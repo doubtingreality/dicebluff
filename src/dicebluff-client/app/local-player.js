@@ -5,7 +5,7 @@ function LocalPlayer(console) {
 }
 
 LocalPlayer.prototype.rollDice = function(diceCount, eyesCallback) {
-    var diceGroup = this.console.createDiceGroup(Dice.frames, diceCount);
+    var diceGroup = this.console.createDiceGroup(Dice.largeFrames, diceCount);
 
     this.console.createEmptyOutput(false);
     this.console.createOutput('Press <space> to roll the dice.', false);

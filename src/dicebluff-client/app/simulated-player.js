@@ -73,6 +73,15 @@ SimulatedPlayer.prototype.evaluateClaim = function(
     window.setTimeout(verdictCallback.bind(null, verdict), evaluationDuration);
 };
 
+SimulatedPlayer.prototype.makeClaim = function(
+    totalDiceCount,
+    handEyesList,
+    wildcardPermitted,
+    claimCallback
+) {
+    //
+}
+
 SimulatedPlayer.prototype.reviseClaim = function(
     totalDiceCount,
     handEyesList,
