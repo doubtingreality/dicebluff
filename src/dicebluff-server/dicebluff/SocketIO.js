@@ -36,11 +36,6 @@ class SocketIO {
 		this.log("Server started");
 	}
 
-	log(log_string)
-	{
-		console.log(log_string);
-	}
-
 }
 
 export {
