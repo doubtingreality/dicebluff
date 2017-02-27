@@ -7,6 +7,28 @@ function DiceGroup(diceList) {
     this.diceList = diceList;
 }
 
+DiceGroup.prototype.drawFrame = function(frameIndices) {
+    var diceCount = this.diceList.length,
+        frameCount = frameIndices.length,
+        diceIndex,
+        dice,
+        frameIndex;
+
+    if (diceCount !== frameCount) {
+        throw new Error(
+            'The number of frame indices must match the number of dice'
+        );
+    }
+
+    // Draw a frame for each dice
+    for (diceIndex = 0; (diceIndex < diceCount); diceIndex++) {
+        dice = this.diceList[diceIndex];
+        frameIndex = frameIndices[diceIndex];
+
+        dice.drawFrame(frameIndex);
+    }
+};
+
 DiceGroup.prototype.roll = function(
     maximumRollCount,
     minimumRollDuration,
