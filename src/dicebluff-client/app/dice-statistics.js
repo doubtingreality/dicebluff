@@ -119,8 +119,8 @@ DiceStatistics.lookupProbability = function(
         of JavaScript numbers - http://bit.ly/2lp4xiz) */
     probabilityTable = (
         wildcardPermitted
-            ? DiceGroup.wildcardProbabilityTable
-            : DiceGroup.probabilityTable
+            ? DiceStatistics.wildcardProbabilityTable
+            : DiceStatistics.probabilityTable
     );
 
     probabilityRowOffset = (totalDiceCount - 1);
