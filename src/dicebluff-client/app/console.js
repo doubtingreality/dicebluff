@@ -183,18 +183,36 @@ Console.prototype.promptForInput = function(inputCallback) {
     };
 };
 
-Console.prototype.promptForInputRepeat = function(repeatCallback, inputCallback) {
+Console.prototype.promptForInputRepeat = function(inputCallback) {
     var selfReference = this;
 
     function inputIteration(promptContent) {
-        if (repeatCallback.call(null, promptContent)) {
-            inputCallback.call(null, promptContent);
-        } else {
+        if (!inputCallback.call(null, promptContent)) {
             selfReference.promptForInput(inputIteration);
         }
     }
 
     selfReference.promptForInput(inputIteration);
+};
+
+Console.prototype.promptForConfirmation = function(confirmationCallback) {
+    var selfReference = this,
+        confirmationPattern = /^\s*(y|n|yes|no)\s*$/i;
+
+    selfReference.promptForInputRepeat(function(promptContent) {
+        var confirmationResult = confirmationPattern.exec(promptContent);
+
+        if (confirmationResult === null) {
+            /* Indicate that the input was incorrect
+                and give suggestions for appropriate responses */
+            selfReference.createOutput('Please answer "yes" or "no"', false);
+            return false;
+        }
+
+        confirmationCallback.call(null,
+            (confirmationResult[1].charAt(0).toLowerCase() === 'y'));
+        return true;
+    });
 };
 
 Console.prototype.promptForKeypress = function(keyCode, keyCallback) {
