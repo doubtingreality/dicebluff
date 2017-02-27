@@ -83,5 +83,5 @@ LocalPlayer.prototype.reviseClaim = function(
     wildcardPermitted,
     claimCallback
 ) {
-    //
+    // --
 };

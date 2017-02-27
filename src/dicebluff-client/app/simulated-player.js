@@ -51,7 +51,7 @@ SimulatedPlayer.prototype.evaluateClaim = function(
     handEyesCount = handEyesList.length;
     claimEyesCount = claimEyesList.length;
 
-    // Determine how many of the claim eyes are not in our hand
+    // Determine how many of the claim eyes are in our hand
     matchedEyesCount = DiceFilter.matchEyes(
         handEyesList,
         claimEyesList,
